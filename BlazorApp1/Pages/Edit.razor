@@ -1,0 +1,45 @@
+﻿@page "/edit/{id:int}"
+@inject IProductService ProductService 
+@inject ICategoryService CategoryService
+@inject NavigationManager UriHelper
+<EditForm Model="product" OnSubmit="whenSubmit">
+        <div class="mb-2">
+            <label>Name</label>
+            <InputText @bind-Value="product.Name" class="form-control"></InputText>
+        </div>
+        <div class="mb-2">
+            <label>info</label>
+            <InputText @bind-Value="product.info" class="form-control"></InputText>
+        </div>
+        <div class="mb-2">
+             <label>price</label>
+            <InputNumber @bind-Value="product.price" class="form-control"></InputNumber>
+        </div>
+        <div>
+            <label>category</label>
+            <InputSelect @bind-Value="product.cat_Id" class="form-control">
+                @foreach (var item in categories)
+                   {
+                       <option class="py-2" value="@item.Id">@item.Name</option>
+                   }
+            </InputSelect>
+        </div>
+        <input type="submit" value="Update" class="btn btn-success mt-4">
+</EditForm>
+@code {
+    [Parameter]
+    public int id { set; get; }
+    public Product product { set; get; }
+    public List<Category> categories { set; get; }
+
+    protected override void OnInitialized()
+    {
+        product = ProductService.getProductById(id);
+        categories = CategoryService.getAllCats();
+    }
+    void whenSubmit()
+    {
+        ProductService.editProductById(id, product);
+        UriHelper.NavigateTo("Products");
+    }
+}
